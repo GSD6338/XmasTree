@@ -4,7 +4,7 @@ import neopixel
 import time 
 
 total_leds = 500
-MASTERDIR = "315"
+MASTERDIR = "0"
 
 pixels = neopixel.NeoPixel(board.D18, total_leds)
 cam = cv2.VideoCapture(0)
