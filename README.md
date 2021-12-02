@@ -20,7 +20,7 @@ If you set a physical Christmas tree with lights, you can get an estimate of the
 3. Run `mapper.ipynb` to process all the images and generate the coordinates of the tree. This may take some time! 
 4. Run `adjuster.ipynb` to correct some of the outliers. 
 
-A version of the final outcome from our test tree is provided in file `coords_norm_adjusted_new.txt`. If you don't have a tree yourself, feel free to use these as the starting point. 
+A version of the final outcome from our test tree is provided in file `coords_adjusted.txt`. If you don't have a tree yourself, feel free to use these as the starting point. 
 
 Questions, suggestions and PRs can be directed to [@range-et](https://github.com/range-et)! 
 
