@@ -4,7 +4,7 @@ This repo contains the code for the computational illumination of a Christmas Tr
 
 It is based on the work by Matt Parker from [@standupmaths](https://github.com/standupmaths/), and his video ["I wired my tree with 500 LED lights and calculated their 3D coordinates"](https://www.youtube.com/watch?v=TvlpIojusBE). 
 
-This version contains an independent LED 3D calibration routine based on Matt's explanations on the video developed by [@range-et](https://github.com/range-et), Grasshopper + C# scripts to generate animated light sequences developed by [@garciadelcastillo](https://github.com/garciadelcastillo), and python scripts for the Raspberry Pi to load and run them on the tree.
+This version contains an original LED 3D calibration routine developed by [@range-et](https://github.com/range-et) based on Matt's explanations on the video, Grasshopper + C# scripts to generate animated light sequences developed by [@garciadelcastillo](https://github.com/garciadelcastillo), and python scripts for the Raspberry Pi to load and run them on the tree.
 
 The main difference is that Matt's approach uses custom Python scripts with sequences ran directly on the RPi, whereas this workflow "bakes" the animations to `CSV` files that can then be ran from the RPi. The advantage of this approach is that the CSV sequences can be parsed on any graphics environment and displayed/simulated without needing to compile Python code. The downside is that the coordinates of the LEDs need to be known _a priori_ before generating the CSV file (CSV files become _tree-specific_).
 
