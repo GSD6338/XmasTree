@@ -16,7 +16,7 @@ The main difference is that Matt's approach uses custom Python scripts with sequ
 If you set a physical Christmas tree with lights, you can get an estimate of their 3D position using the following:
 
 1. Run `imageCapture.py` from a Raspberry Pi with a webcam and connected to the tree. The script will take one image per LED for angle 0: `$ sudo python3 imageCapture.py`
-2. Repeat this process by physically rotating the tree 45, 90, 135, 180, 225, 270 & 315 degrees, and correspondingly updating the `MASTERDIR` variable in the script.
+2. Repeat this process by physically rotating the tree 45, 90, 135, 180, 225, 270 & 315 degrees, and correspondingly updating the `MASTERDIR` variable in the script. A sample dataset is provided.
 3. Run `mapper.ipynb` to process all the images and generate the coordinates of the tree. This may take some time! 
 4. Run `adjuster.ipynb` to correct some of the outliers. 
 
