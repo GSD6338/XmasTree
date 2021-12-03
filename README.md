@@ -8,7 +8,7 @@ This version contains an original LED 3D calibration routine developed by [@rang
 
 The main difference is that Matt's approach uses custom Python scripts with sequences ran directly on the RPi, whereas this workflow "bakes" the animations to `CSV` files that can then be ran from the RPi. The advantage of this approach is that the CSV sequences can be parsed on any graphics environment and displayed/simulated without needing to compile Python code. The downside is that the coordinates of the LEDs need to be known _a priori_ before generating the CSV file (CSV files become _tree-specific_).
 
-[ParametricCamp](https://www.youtube.com/channel/UCSgG9KzVsS6jArapCx-Bslg) did a video series explaining (most of) this workflow here: https://youtu.be/tM7pkVUSKKQ
+[ParametricCamp](https://www.youtube.com/channel/UCSgG9KzVsS6jArapCx-Bslg) did a video series explaining (most of) this workflow here: [https://youtu.be/ma4JF6b4Dqk](https://youtu.be/ma4JF6b4Dqk)
 
 ## Usage
 
