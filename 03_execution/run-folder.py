@@ -43,7 +43,7 @@ def tween_frames(frame_a, frame_b, ratio):
     for i in range(0, len_a):
         g = round((1 - ratio) * frame_a[i][0] + ratio * frame_b[i][0])
         r = round((1 - ratio) * frame_a[i][1] + ratio * frame_b[i][1])
-        b = round((1 - ratio) * frame_a[i][1] + ratio * frame_b[i][2])
+        b = round((1 - ratio) * frame_a[i][2] + ratio * frame_b[i][2])
         tween.append((g, r, b))  # remember that LEDs take GRB values
 
     return tween
