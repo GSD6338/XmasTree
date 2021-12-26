@@ -5,9 +5,6 @@ import sys
 
 from ledsAdapters.PhysicalLedsAdapter import PhysicalLedsAdapter
 
-from ledsMapReaders.CsvLedsMapReader import CsvLedsMapReader
-from ledsMapReaders.TxtLedsMapReader import TxtLedsMapReader
-
 from animationFileReaders.CsvAnimationFileReader import CsvAnimationFileReader
 
 
