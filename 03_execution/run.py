@@ -4,6 +4,10 @@ import time
 import sys
 
 from ledsAdapters.PhysicalLedsAdapter import PhysicalLedsAdapter
+
+from ledsMapReaders.CsvLedsMapReader import CsvLedsMapReader
+from ledsMapReaders.TxtLedsMapReader import TxtLedsMapReader
+
 from animationFileReaders.CsvAnimationFileReader import CsvAnimationFileReader
 
 
@@ -30,5 +34,32 @@ class Tree():
         self._ledsAdapter.flush()
 
 
-tree = Tree(PhysicalLedsAdapter(500))
+# if LEDs map file is set then select map reader by extension and configure Visual LEDs adapter
+if len(sys.argv) > 2:
+    mapFileName = sys.argv[2]
+    mapFileNameExtension = mapFileName.split(".")[-1]
+    if (mapFileNameExtension == 'txt'):
+        TxtLedsMapReaderModule = __import__('ledsMapReaders.TxtLedsMapReader')
+        TxtLedsMapReader = getattr(TxtLedsMapReaderModule, 'TxtLedsMapReader')
+        mapReader = TxtLedsMapReader.TxtLedsMapReader(mapFileName)
+    elif (mapFileNameExtension == 'csv'):
+        CsvLedsMapReaderModule = __import__('ledsMapReaders.CsvLedsMapReader')
+        CsvLedsMapReader = getattr(CsvLedsMapReaderModule, 'CsvLedsMapReader')
+        mapReader = CsvLedsMapReader.CsvLedsMapReader(mapFileName)
+    else:
+        print('Unknown LED map type')
+        quit()
+
+    VisualLedsAdapterModule = __import__('ledsAdapters.VisualLedsAdapter')
+    VisualLedsAdapter = getattr(VisualLedsAdapterModule, 'VisualLedsAdapter')
+    ledsAdapter = VisualLedsAdapter.VisualLedsAdapter(500, mapReader, 800, 800)
+# if LEDs file isn't set then configure Physical LEDs adapter
+else:
+    PhysicalLedsAdapterModule = __import__('ledsAdapters.PhysicalLedsAdapter')
+    PhysicalLedsAdapter = getattr(PhysicalLedsAdapterModule, 'PhysicalLedsAdapter')
+    ledsAdapter = PhysicalLedsAdapter.PhysicalLedsAdapter(500)
+    
+mapReader.normalize()
+
+tree = Tree(ledsAdapter)
 tree.runRepeatedAnimation(CsvAnimationFileReader(sys.argv[1]), 0, 60)
