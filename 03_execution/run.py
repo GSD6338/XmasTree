@@ -3,8 +3,6 @@
 import time
 import sys
 
-from ledsAdapters.PhysicalLedsAdapter import PhysicalLedsAdapter
-
 from animationFileReaders.CsvAnimationFileReader import CsvAnimationFileReader
 
 
