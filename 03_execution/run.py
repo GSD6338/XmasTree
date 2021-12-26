@@ -1,73 +1,119 @@
 # Based on code from https://github.com/standupmaths/xmastree2020
 
+from typing import List, Tuple, Optional
+import time
+import csv
+import argparse
+
 import board
 import neopixel
-import time 
-from csv import reader
-import sys
-
-# helper function for chunking 
-def chunks(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i+n]
-
-# sleep_time = 0.033 # approx 30fps 
-sleep_time = 0.017  # approx 60fps
-
-NUMBEROFLEDS = 500
-pixels = neopixel.NeoPixel(board.D18, NUMBEROFLEDS, auto_write=False)
-
-csvFile = sys.argv[1]
 
 
-# read the file
-# iterate through the entire thing and make all the points the same colour 
-lightArray = []
+# parser to parse the command line inputs
+parser = argparse.ArgumentParser(description="Run a single spreadsheet on loop.")
+parser.add_argument(
+    "csv_path",
+    metavar="csv-path",
+    type=str,
+    help="The absolute or relative path to the csv file.",
+)
+
+# change if your setup has a different number of LEDs
+NUMBER_OF_LEDS = 500
 
 
-with open(csvFile, 'r') as read_obj:
-    # pass the file object to reader() to get the reader object
-    csv_reader = reader(read_obj)
+def parse_animation_csv(
+    csv_path,
+) -> Tuple[List[List[Tuple[float, float, float]]], List[float]]:
+    """
+    Parse a CSV animation file into python objects.
 
-    # Iterate over each row in the csv using reader object
-    lineNumber = 0
-    for row in csv_reader:
-        # row variable is a list that represents a row in csv
-        # break up the list of rgb values 
-        # remove the first item
-        if lineNumber > 0:
-            parsed_row = []
-            row.pop(0)
-            chunked_list = list(chunks(row, 3))
-            for element_num in range(len(chunked_list)):
-                # this is a single light 
-                r = float(chunked_list[element_num][0])
-                g = float(chunked_list[element_num][1])
-                b = float(chunked_list[element_num][2])
-                light_val = (g, r, b)
-                # turn that led on
-                parsed_row.append(light_val)
-            
-            # append that line to lightArray 
-            lightArray.append(parsed_row)
-        # time.sleep(0.03)
+    :param csv_path: The path to the csv animation file
+    :return: A list LED colours per frame (GRB) and a list of times for each frame
+    """
+    # parse the CSV file
+    # The example files in this repository start with \xEF\xBB\xBF See UTF-8 BOM
+    # If read normally these become part of the first header name
+    # utf-8-sig reads this correctly and also handles the case when they don't exist
+    with open(csv_path, "r", encoding="utf-8-sig") as csv_file:
+        # pass the file object to reader() to get the reader object
+        csv_reader = csv.reader(csv_file)
 
-        lineNumber += 1
+        # this is a list of strings containing the column names
+        header = next(csv_reader)
 
-print("Finished Parsing")
+        # read in the remaining data
+        data = list(csv_reader)
+
+    # create a dictionary mapping the header name to the index of the header
+    header_indexes = dict(zip(header, range(len(header))))
+
+    # find the column numbers of each required header
+    # we should not assume that the columns are in a known order. Isn't that the point of column names?
+    # If a column does not exist it is set to None which is handled at the bottom and populates the column with 0.0
+    led_columns: List[Tuple[Optional[int], Optional[int], Optional[int]]] = [
+        tuple(header_indexes.pop(f"{channel}_{led_index}", None) for channel in "GRB")
+        for led_index in range(NUMBER_OF_LEDS)
+    ]
+
+    if "FRAME_ID" in header_indexes:
+        # get the frame id column index
+        frame_id_column = header_indexes.pop("FRAME_ID")
+        # don't assume that the frames are in chronological order. Isn't that the point of storing the frame index?
+        # sort the frames by the frame index
+        data = sorted(data, key=lambda frame_data: int(frame_data[frame_id_column]))
+        # There may be a case where a frame is missed eg 1, 2, 4, 5, ...
+        # Should we duplicate frame 2 in this case?
+        # For now it can go straight from frame 2 to 4
+
+    if "FRAME_TIME" in header_indexes:
+        # Add the ability for the CSV file to specify how long the frame should remain for
+        # This will allow users to customise the frame rate and even have variable frame rates
+        # Note that frame rate is hardware limited because the method that pushes changes to the tree takes a while.
+        frame_time_column = header_indexes.pop("FRAME_TIME")
+        frame_times = [float(frame_data[frame_time_column]) for frame_data in data]
+    else:
+        # if the frame time column is not defined default to 60fps
+        frame_times = [1 / 60] * len(data)
+
+    frames = [
+        [
+            tuple(
+                # Get the LED value or populate with 0.0 if the column did not exist
+                0.0 if channel is None else float(frame_data[channel])
+                # for each channel in the LED
+                for channel in channels
+            )
+            # for each LED in the chain
+            for channels in led_columns
+        ]
+        # for each frame in the data
+        for frame_data in data
+    ]
+    print("Finished Parsing")
+    return frames, frame_times
 
 
+def run():
+    args = parser.parse_args()
+    csv_path = args.csv_path
 
-# run the code on the tree
-while True:
-    f = 0
-    for frame in lightArray:
-        print("running frame " + str(f))
-        LED = 0
-        while LED < NUMBEROFLEDS:
-            pixels[LED] = frame[LED]
-            LED += 1
-        pixels.show()
-    
-        f += 1
-#        time.sleep(sleep_time)
+    frames, frame_times = parse_animation_csv(csv_path)
+
+    pixels = neopixel.NeoPixel(board.D18, NUMBER_OF_LEDS, auto_write=False)
+
+    # run the code on the tree
+    while True:
+        for frame_index, (frame, frame_time) in enumerate(zip(frames, frame_times)):
+            t = time.time()
+            print(f"running frame {frame_index}")
+            for led in range(NUMBER_OF_LEDS):
+                pixels[led] = frame[led]
+            pixels.show()
+            sleep_time = frame_time - (time.time() - t)
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+
+
+if __name__ == "__main__":
+    run()
