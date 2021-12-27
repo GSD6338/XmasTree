@@ -1,5 +1,7 @@
 # Computational Xmas Tree
 
+![](assets/gsd6338.png)
+
 This repo contains the code for the computational illumination of a Christmas Tree! 
 
 It is based on the work by Matt Parker from [@standupmaths](https://github.com/standupmaths/), and his video ["I wired my tree with 500 LED lights and calculated their 3D coordinates"](https://www.youtube.com/watch?v=TvlpIojusBE). 
@@ -8,7 +10,9 @@ This version contains an original LED 3D calibration routine developed by [@rang
 
 The main difference is that Matt's approach uses custom Python scripts with sequences ran directly on the RPi, whereas this workflow "bakes" the animations to `CSV` files that can then be ran from the RPi. The advantage of this approach is that the CSV sequences can be parsed on any graphics environment and displayed/simulated without needing to compile Python code. The downside is that the coordinates of the LEDs need to be known _a priori_ before generating the CSV file (CSV files become _tree-specific_).
 
-[ParametricCamp](https://www.youtube.com/channel/UCSgG9KzVsS6jArapCx-Bslg) did a video series explaining (most of) this workflow here: [https://youtu.be/ma4JF6b4Dqk](https://youtu.be/ma4JF6b4Dqk)
+![](assets/pcamp.png)
+
+Jose Luis did a video series on [ParametricCamp](https://www.youtube.com/channel/UCSgG9KzVsS6jArapCx-Bslg) explaining (most of) this workflow: [https://youtu.be/ma4JF6b4Dqk](https://youtu.be/ma4JF6b4Dqk)
 
 ## Usage
 
@@ -47,3 +51,14 @@ To run a sequence with OpenGL simulator execute this command: `$ sudo python3 vi
 
 ### Known Issues
 There are some issues with running the visualization script on windows (problems with GLUT)
+
+
+# Credits
+
+Thanks to the superstar roster of TAs Indrajeet, Amelia and Jessica for putting together the tree and writing the foundational calibration code. 
+
+Big 💯 to all the students who gave it a try to write sequences for the tree!
+
+Project led by [Jose Luis Garcia del Castillo y Lopez](https://www.gsd.harvard.edu/person/jose-luis-garcia-del-castillo-lopez/) as part of our work at [GSD-6338: Introduction to Computational Design](https://www.gsd.harvard.edu/course/introduction-to-computational-design-fall-2021/) at the [Harvard University Graduate School of Design](https://www.gsd.harvard.edu/).
+
+Original idea by Matt Parker from [@standupmaths](https://github.com/standupmaths/).
