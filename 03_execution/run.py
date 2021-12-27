@@ -63,8 +63,8 @@ def parse_animation_csv(
         frame_time_column = header_indexes.pop("FRAME_TIME")
         frame_times = [float(frame_data[frame_time_column]) for frame_data in data]
     else:
-        # if the frame time column is not defined default to 60fps
-        frame_times = [1 / 60] * len(data)
+        # if the frame time column is not defined then run as fast as possible like the old code.
+        frame_times = [0] * len(data)
 
     frames = [
         [
