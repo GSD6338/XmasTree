@@ -2,12 +2,17 @@
 
 import board
 import neopixel
-import time 
 
-NUMBEROFLEDS = 500
-pixels = neopixel.NeoPixel(board.D18, NUMBEROFLEDS)
 
-for x in range(NUMBEROFLEDS):
-    pixels[x] = (0,0,0)
+def main():
+    number_of_leds = 500
+    pixels = neopixel.NeoPixel(board.D18, number_of_leds)
 
-print("Done")
+    for led in range(number_of_leds):
+        pixels[led] = (0, 0, 0)
+
+    print("Done")
+
+
+if __name__ == '__main__':
+    main()
