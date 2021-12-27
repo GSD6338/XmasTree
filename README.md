@@ -36,10 +36,14 @@ A few scripts, based on Matt's original code, are provided to load the CSV seque
 
 1. Copy the content of the `execution` folder to the RPi, as well as a few of the CSV sequences. 
 2. To run a sequence: `$ sudo python3 run.py light-sequence.csv`
-   * To run a sequence with OpenGL simulation: `$ sudo python3 run.py light-sequence.csv tree-map-file.csv`
 3. To run all the sequences in a folder: `$ sudo python3 run-folder.py seq-folder/ 3 30`. The optional number `3` indicates that each sequence will be looped `3` times before moving on to the next, and the optional `30` indicates that sequences will be blended over `30` frames.
 4. If you stop a sequence and want to turn off the tree, run `$ sudo python3 flush.py`
 5. If you need to fine calibrate the tree, you can turn on specific lights by ID running `$ sudo python3 turnon.py 0 99 199 299 399 499`. 
 
+## Visualization
+If you haven't got real Cristmas tree with light, you still can visualize a tree from lights coordinates given in a csv file where each line represents a light position as "x,y,z", or in a txt file where each line also represents a light but the format of each line is "\[x, y, z\]"
 
+To run a sequence with OpenGL simulator execute this command: `$ sudo python3 visualization.py light-sequence.csv tree-map-file.csv`
 
+### Known Issues
+There are some issues with running the visualization script on windows (problems with GLUT)
