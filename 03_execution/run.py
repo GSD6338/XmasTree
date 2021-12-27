@@ -80,12 +80,12 @@ def parse_animation_csv(
         # for each frame in the data
         for frame_data in data
     ]
-    print("Finished Parsing")
     return frames, frame_times
 
 
 def load_and_run_csv(csv_path):
     frames, frame_times = parse_animation_csv(csv_path)
+    print("Finished Parsing")
 
     pixels = neopixel.NeoPixel(board.D18, NUMBER_OF_LEDS, auto_write=False)
 
@@ -93,7 +93,6 @@ def load_and_run_csv(csv_path):
     while True:
         for frame_index, (frame, frame_time) in enumerate(zip(frames, frame_times)):
             t = time.time()
-            print(f"running frame {frame_index}")
             for led in range(NUMBER_OF_LEDS):
                 pixels[led] = frame[led]
             pixels.show()
