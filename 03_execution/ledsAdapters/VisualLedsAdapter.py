@@ -16,38 +16,43 @@ class VisualLedsAdapter(LedsAdapter):
         self._thread = threading.Thread(target=self.startOpenGlThread, args=())
         self._thread.start()
         self._cameraRotation = 0
+        self._cameraRotationX = 0
         self._cameraZoom = 1
         self._bounds = (w, h)
 
     def startOpenGlThread(self):
         glutInit()
-        glutInitDisplayMode(GLUT_RGBA)
+        glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE)
         glutInitWindowSize(self._bounds[0], self._bounds[1])
         glutInitWindowPosition(0, 0)
         wind = glutCreateWindow("OpenGL tree visualization")
         glutDisplayFunc(self.paint)
         glutIdleFunc(self.paint)
+        glEnable(GL_DEPTH_TEST)
+        glDepthFunc(GL_LESS);
 
-        glutMotionFunc(self.rotateAndZoomTree)
+        glutMotionFunc(self.rotateTree)
         glutMainLoop()  # Keeps the window created above displaying/running in a loop
 
-    def rotateAndZoomTree(self, x, y):
+    def rotateTree(self, x, y):
         self._cameraRotation = 360*(x - self._bounds[0]/2)/self._bounds[0]
-        self._cameraZoom = (self._bounds[1]/2 - y)/(self._bounds[1]/2) + 1
+        self._cameraRotationX = -360*(y - self._bounds[1]/2)/self._bounds[1]
 
     def paint(self):
-        glEnable(GL_DEPTH_TEST)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # Remove everything from screen (i.e. displays all white)
+        
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity() # Reset all graphic/shape's position
         glFrustum(-2.0, 2.0, -0.5, 3.5, 6.0, 10.0)
-        glTranslate(0.0, 0.0, -8.0)
-        glRotate(10, 1.0, 0.0, 0.0)
+        glTranslate(0.0, 1.0, -8.0)
+        glRotate(-self._cameraRotationX, 1.0, 0.0, 0.0)
         glRotate(-self._cameraRotation, 0.0, 1.0, 0.0)
+        glTranslate(0.0, -1.0, 0.0)
         self.drawTree()
+        glTranslate(0.0, 1.0, 0.0)
         glRotate(self._cameraRotation, 0.0, 1.0, 0.0)
-        glRotate(-10, 1.0, 0.0, 0.0)
-        glTranslate(0.0, 0.0, 8.0)
+        glRotate(self._cameraRotationX, 1.0, 0.0, 0.0)
+        glTranslate(0.0, -1.0, 8.0)
         glMatrixMode(GL_MODELVIEW)
         glutSwapBuffers()
 
