@@ -5,6 +5,8 @@ import sys
 
 from animationFileReaders.CsvAnimationFileReader import CsvAnimationFileReader
 from ledsAdapters.VisualLedsAdapter import VisualLedsAdapter
+from ledsMapReaders.CsvLedsMapReader import CsvLedsMapReader
+from ledsMapReaders.TxtLedsMapReader import TxtLedsMapReader
 
 
 class Tree():
@@ -33,13 +35,9 @@ class Tree():
 mapFileName = sys.argv[2]
 mapFileNameExtension = mapFileName.split(".")[-1]
 if (mapFileNameExtension == 'txt'):
-    TxtLedsMapReaderModule = __import__('ledsMapReaders.TxtLedsMapReader')
-    TxtLedsMapReader = getattr(TxtLedsMapReaderModule, 'TxtLedsMapReader')
-    mapReader = TxtLedsMapReader.TxtLedsMapReader(mapFileName)
+    mapReader = TxtLedsMapReader(mapFileName)
 elif (mapFileNameExtension == 'csv'):
-    CsvLedsMapReaderModule = __import__('ledsMapReaders.CsvLedsMapReader')
-    CsvLedsMapReader = getattr(CsvLedsMapReaderModule, 'CsvLedsMapReader')
-    mapReader = CsvLedsMapReader.CsvLedsMapReader(mapFileName)
+    mapReader = CsvLedsMapReader(mapFileName)
 else:
     print('Unknown LED map type')
     quit()
