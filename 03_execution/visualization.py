@@ -30,24 +30,22 @@ class Tree():
         self._ledsAdapter.flush()
 
 
-if len(sys.argv) > 2:
-    mapFileName = sys.argv[2]
-    mapFileNameExtension = mapFileName.split(".")[-1]
-    if (mapFileNameExtension == 'txt'):
-        TxtLedsMapReaderModule = __import__('ledsMapReaders.TxtLedsMapReader')
-        TxtLedsMapReader = getattr(TxtLedsMapReaderModule, 'TxtLedsMapReader')
-        mapReader = TxtLedsMapReader.TxtLedsMapReader(mapFileName)
-    elif (mapFileNameExtension == 'csv'):
-        CsvLedsMapReaderModule = __import__('ledsMapReaders.CsvLedsMapReader')
-        CsvLedsMapReader = getattr(CsvLedsMapReaderModule, 'CsvLedsMapReader')
-        mapReader = CsvLedsMapReader.CsvLedsMapReader(mapFileName)
-    else:
-        print('Unknown LED map type')
-        quit()
+mapFileName = sys.argv[2]
+mapFileNameExtension = mapFileName.split(".")[-1]
+if (mapFileNameExtension == 'txt'):
+    TxtLedsMapReaderModule = __import__('ledsMapReaders.TxtLedsMapReader')
+    TxtLedsMapReader = getattr(TxtLedsMapReaderModule, 'TxtLedsMapReader')
+    mapReader = TxtLedsMapReader.TxtLedsMapReader(mapFileName)
+elif (mapFileNameExtension == 'csv'):
+    CsvLedsMapReaderModule = __import__('ledsMapReaders.CsvLedsMapReader')
+    CsvLedsMapReader = getattr(CsvLedsMapReaderModule, 'CsvLedsMapReader')
+    mapReader = CsvLedsMapReader.CsvLedsMapReader(mapFileName)
+else:
+    print('Unknown LED map type')
+    quit()
 
-    ledsAdapter = VisualLedsAdapter(500, mapReader, 800, 800)
-    
 mapReader.normalize()
 
+ledsAdapter = VisualLedsAdapter(500, mapReader, 800, 800)
 tree = Tree(ledsAdapter)
 tree.runRepeatedAnimation(CsvAnimationFileReader(sys.argv[1]), 0, 60)

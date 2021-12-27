@@ -29,10 +29,8 @@ class Tree():
     def flushLeds(self):
         self._ledsAdapter.flush()
 
-
-ledsAdapter = PhysicalLedsAdapter(500)
-    
 mapReader.normalize()
 
+ledsAdapter = PhysicalLedsAdapter(500)
 tree = Tree(ledsAdapter)
 tree.runRepeatedAnimation(CsvAnimationFileReader(sys.argv[1]), 0, 60)
