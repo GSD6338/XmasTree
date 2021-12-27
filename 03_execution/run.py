@@ -8,16 +8,6 @@ import argparse
 import board
 import neopixel
 
-
-# parser to parse the command line inputs
-parser = argparse.ArgumentParser(description="Run a single spreadsheet on loop.")
-parser.add_argument(
-    "csv_path",
-    metavar="csv-path",
-    type=str,
-    help="The absolute or relative path to the csv file.",
-)
-
 # change if your setup has a different number of LEDs
 NUMBER_OF_LEDS = 500
 
@@ -94,10 +84,7 @@ def parse_animation_csv(
     return frames, frame_times
 
 
-def run():
-    args = parser.parse_args()
-    csv_path = args.csv_path
-
+def load_and_run_csv(csv_path):
     frames, frame_times = parse_animation_csv(csv_path)
 
     pixels = neopixel.NeoPixel(board.D18, NUMBER_OF_LEDS, auto_write=False)
@@ -115,5 +102,20 @@ def run():
                 time.sleep(sleep_time)
 
 
+def main():
+    # parser to parse the command line inputs
+    parser = argparse.ArgumentParser(description="Run a single spreadsheet on loop.")
+    parser.add_argument(
+        "csv_path",
+        metavar="csv-path",
+        type=str,
+        help="The absolute or relative path to the csv file.",
+    )
+
+    args, _ = parser.parse_known_args()
+    csv_path = args.csv_path
+    load_and_run_csv(csv_path)
+
+
 if __name__ == "__main__":
-    run()
+    main()
