@@ -20,5 +20,13 @@ This column is optional. If undefined will default to 1/30th of a second.
 Examples are `R_0`, `G_0` and `B_0` which are the red, green and blue channel for LED 0.
 The values of these columns should be floats or ints between 0 and 255 inclusive. 
 
-⚠️Note that the old python running code has a number of limitations.
+### Warning ⚠️
+The old running code has a number of limitations including assuming the position of columns.
+
+To guarantee that your spreadsheet is read correctly the first column should be `FRAME_ID` or `FRAME_TIME`.
+
+The remaining columns should be `R_0`,`G_0`,`B_0`,`R_1`,`G_1`,`B_1`,`R_2`,`G_2`,`B_2`,`R_3`,`G_3`,`B_3`, ...
+
+There should be no more columns after `B_499`
+
 If you are getting errors running a CSV animation file with run.py make sure you have the latest version which removes all of these limitations.
