@@ -70,7 +70,7 @@ def parse_animation_csv(
         # This will allow users to customise the frame rate and even have variable frame rates
         # Note that frame rate is hardware limited because the method that pushes changes to the tree takes a while.
         frame_time_column = header_indexes.pop("FRAME_TIME")
-        frame_times = [float(frame_data[frame_time_column]) for frame_data in data]
+        frame_times = [float(frame_data[frame_time_column])/1000 for frame_data in data]
     else:
         # if the frame time column is not defined then run as fast as possible like the old code.
         frame_times = [0] * len(data)
