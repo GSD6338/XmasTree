@@ -100,13 +100,13 @@ def draw_frame(pixels: neopixel.NeoPixel, frame: Frame, frame_time: float):
     :param frame: The frame to draw
     :param frame_time: The time this frame should remain on the device
     """
-    t = time.time()
+    t = time.perf_counter()
     for led in range(pixels.n):
         pixels[led] = frame[led]
     pixels.show()
-    sleep_time = frame_time - (time.time() - t)
-    if sleep_time > 0:
-        time.sleep(sleep_time)
+    end_time = t + frame_time
+    while time.perf_counter() < end_time:
+        time.sleep(0)
 
 
 def draw_frames(pixels: neopixel.NeoPixel, frames: Frames, frame_times: FrameTimes):
