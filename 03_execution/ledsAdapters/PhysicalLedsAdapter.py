@@ -5,7 +5,7 @@ from ledsAdapters.LedsAdapter import LedsAdapter
 class PhysicalLedsAdapter(LedsAdapter):
     def __init__(self, ledsCount):
         LedsAdapter.__init__(self, ledsCount)
-        self._pixels = neopixel.NeoPixel(board.D18, ledsCount, auto_write=False)
+        self._pixels = neopixel.NeoPixel(board.D18, ledsCount, auto_write=False, pixel_order=neopixel.RGB)
 
     def showFrame(self, frame):
         ledsCounter = 0
