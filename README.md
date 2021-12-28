@@ -44,6 +44,14 @@ A few scripts, based on Matt's original code, are provided to load the CSV seque
 4. If you stop a sequence and want to turn off the tree, run `$ sudo python3 flush.py`
 5. If you need to fine calibrate the tree, you can turn on specific lights by ID running `$ sudo python3 turnon.py 0 99 199 299 399 499`. 
 
+## Visualization
+If you haven't got real Cristmas tree with light, you still can visualize a tree from lights coordinates given in a csv file where each line represents a light position as "x,y,z" or "id,x,y,z", or in a txt file where each line also represents a light but the format of each line is "\[x, y, z\]"
+
+To run a sequence with OpenGL simulator execute this command: `$ sudo python3 visualization.py light-sequence.csv tree-map-file.csv`
+
+### Known Issues
+There are some issues with running the visualization script on windows (problems with GLUT)
+
 ## Contributions
  
 This repo is just a snapshot of the work we did in the Fall 2021 edition of the GSD-6338 course. Unfortunately, we do not have the resources to maintain, manage or extend it beyond what is available. If you want to ask questions, discuss standards, contribute new code, features and add new sexy goodness, please refer to [Matt's repo](https://github.com/standupmaths/xmastree2021) or start your own fork. Crediting is always welcome, thank you!

@@ -4,7 +4,9 @@ import time
 import sys
 
 from animationFileReaders.CsvAnimationFileReader import CsvAnimationFileReader
-from ledsAdapters.PhysicalLedsAdapter import PhysicalLedsAdapter
+from ledsAdapters.VisualLedsAdapter import VisualLedsAdapter
+from ledsMapReaders.CsvLedsMapReader import CsvLedsMapReader
+from ledsMapReaders.TxtLedsMapReader import TxtLedsMapReader
 
 
 class Tree():
@@ -29,8 +31,19 @@ class Tree():
     def flushLeds(self):
         self._ledsAdapter.flush()
 
+
+mapFileName = sys.argv[2]
+mapFileNameExtension = mapFileName.split(".")[-1]
+if (mapFileNameExtension == 'txt'):
+    mapReader = TxtLedsMapReader(mapFileName)
+elif (mapFileNameExtension == 'csv'):
+    mapReader = CsvLedsMapReader(mapFileName)
+else:
+    print('Unknown LED map type')
+    quit()
+
 mapReader.normalize()
 
-ledsAdapter = PhysicalLedsAdapter(500)
+ledsAdapter = VisualLedsAdapter(500, mapReader, 800, 800)
 tree = Tree(ledsAdapter)
 tree.runRepeatedAnimation(CsvAnimationFileReader(sys.argv[1]), 0, 60)
