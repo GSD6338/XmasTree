@@ -1,166 +1,110 @@
 # Based on code from https://github.com/standupmaths/xmastree2020
+# Modified heavily by gentlegiantJGC
+
+from typing import List
+import os
+import argparse
 
 import board
 import neopixel
-import time 
-from csv import reader
-import sys
-import os
 
-# sleep_time = 0.033 # approx 30fps 
-sleep_time = 0.017  # approx 60fps
-NUMBEROFLEDS = 500
-LOOPS_PER_SEQUENCE = 5
-TRANSITION_FRAMES = 60
+from run_utils import parse_animation_csv, draw_frames, draw_lerp_frames, Sequence
 
-if len(sys.argv) > 2:
-    LOOPS_PER_SEQUENCE = int(sys.argv[2])
-if len(sys.argv) > 3:
-    TRANSITION_FRAMES  = int(sys.argv[3])
-
-print("Sequences will loop " + str(LOOPS_PER_SEQUENCE) + " times")
-print("Sequences will blend over " + str(TRANSITION_FRAMES) + " frames")
+NUMBER_OF_LEDS = 500
 
 
+def run_folder(folder_path: str, loops_per_sequence: int, transition_frames: int):
+    print(f"Sequences will loop {loops_per_sequence} times")
+    print(f"Sequences will blend over {transition_frames} frames")
 
+    print("Loading animation spreadsheets. This may take a while.")
 
-
-# helper function for chunking 
-def chunks(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i+n]
-        
-# Given two light frames and a tween ratio, returns an interpolated one
-def tween_frames(frame_a, frame_b, ratio):
-    # sanity
-    len_a = len(frame_a)
-    len_b = len(frame_b)
-    if len_a != len_b:
-        print("cannot interpolate frames with different lengths")
-        return frame_a
-
-    tween = []
-    for i in range(0, len_a):
-        g = round((1 - ratio) * frame_a[i][0] + ratio * frame_b[i][0])
-        r = round((1 - ratio) * frame_a[i][1] + ratio * frame_b[i][1])
-        b = round((1 - ratio) * frame_a[i][2] + ratio * frame_b[i][2])
-        tween.append((g, r, b))  # remember that LEDs take GRB values
-
-    return tween
-
-# Given two sequences, returns the second one with the staring block 
-# blended with the end of the first one
-def blend_lights(lights_a, lights_b, transition_length):
-    # Blend the last and first blocks of lights
-    end_a = lights_a[len(lights_a) - transition_length:]
-    # print(str(len(end_a)))
-    start_b = lights_b[:transition_length]
-    # print(str(len(start_b)))
-
-    blend = []
-    step = 1.0 / (transition_length + 1)
-    for i in range(0, transition_length):
-        n = step * (i + 1)
-        frame = tween_frames(end_a[i], start_b[i], n)
-        blend.append(frame)
-    
-    return blend + lights_b[transition_length:]
-
-
-
-# Given a filename, returns the parsed light object
-def getLights(csvFile):
-    print("Parsing " + csvFile)
-    # read the file
-    # iterate through the entire thing and make all the points the same colour 
-    lightArray = []
-    
-    with open(csvFile, 'r') as read_obj:
-        # pass the file object to reader() to get the reader object
-        csv_reader = reader(read_obj)
-
-        # Iterate over each row in the csv using reader object
-        lineNumber = 0
-        for row in csv_reader:
-            # row variable is a list that represents a row in csv
-            # break up the list of rgb values 
-            # remove the first item
-            if lineNumber > 0:
-                parsed_row = []
-                row.pop(0)
-                chunked_list = list(chunks(row, 3))
-                for element_num in range(len(chunked_list)):
-                    # this is a single light 
-                    r = float(chunked_list[element_num][0])
-                    g = float(chunked_list[element_num][1])
-                    b = float(chunked_list[element_num][2])
-                    light_val = (g, r, b)  # these LED lights take GRB color for some reason!
-                    # turn that led on
-                    parsed_row.append(light_val)
-                
-                # append that line to lightArray 
-                lightArray.append(parsed_row)
-            
-            lineNumber += 1
-
-    #print("Finished Parsing file " + csvFile)
-    
-    return lightArray
-
-
-# Given a light sequence, it plays it on the tree
-def playLights(neop, lights):
-    f = 0
-    for frame in lights:
-        LED = 0
-        while LED < NUMBEROFLEDS:
-            neop[LED] = frame[LED]
-            LED += 1
-        neop.show()
-        f += 1
-
-
-
-
-# Init the neopixel
-pixels = neopixel.NeoPixel(board.D18, NUMBEROFLEDS, auto_write=False)
-
-# get foldername from CLI arguments
-folder_path = sys.argv[1]
-
-# load csv files
-csv_files = []
-for file in os.listdir(folder_path):
-    if file.endswith(".csv"):
-        csv_files.append(file)
-
-
-# Parse all the sequences at the beginning (its a heavy process for the pi)
-sequences = []
-for file in csv_files:
-    full_path = os.path.join(folder_path, file)
-    if os.path.isfile(full_path):
-        lights = getLights(full_path)
-        sequences.append(lights)
-
-# Play sequences in a loop
-while True:
-    id = 0
-    for lights in sequences:
-        prev = sequences[id - 1]
-        print("Playing file " + csv_files[id])
-        for i in range(0, LOOPS_PER_SEQUENCE):
-            lights_now = []
-            if i != (LOOPS_PER_SEQUENCE - 1):
-                print("Loop " + str(i + 1) + " from " + str(LOOPS_PER_SEQUENCE), end='\r')
-                if i == 0:
-                    lights_now = blend_lights(prev, lights, TRANSITION_FRAMES)
-                else:
-                    lights_now = lights
+    # Load and parse all the sequences at the beginning (it's a heavy process for the pi)
+    csv_files: List[str] = []
+    sequences: List[Sequence] = []
+    for file_name in os.listdir(folder_path):
+        full_path = os.path.join(folder_path, file_name)
+        if file_name.endswith(".csv") and os.path.isfile(full_path):
+            try:
+                # try loading the spreadsheet and report any errors
+                sequence = parse_animation_csv(full_path, NUMBER_OF_LEDS, "RGB")
+            except Exception as e:
+                print(f"Failed loading spreadsheet {file_name}.\n{e}")
             else:
-                print("Loop " + str(i + 1) + " from " + str(LOOPS_PER_SEQUENCE))
-                lights_now = lights[:len(lights)-TRANSITION_FRAMES]
-            
-            playLights(pixels, lights_now)
+                # if the spreadsheet successfully loaded then add it to the data
+                sequences.append(sequence)
+                csv_files.append(file_name)
 
-        id += 1
+    print("Finished loading animation spreadsheets.")
+
+    # Init the neopixel
+    pixels = neopixel.NeoPixel(
+        board.D18, NUMBER_OF_LEDS, auto_write=False, pixel_order=neopixel.RGB
+    )
+
+    last_frame = None
+
+    # Play all sequences in a loop
+    while True:
+        # iterate over the sequences
+        for sequence_id, (file_name, (frames, frame_times)) in enumerate(
+            zip(csv_files, sequences)
+        ):
+            print(f"Playing file {file_name}")
+            for loop in range(0, loops_per_sequence):
+                # run this bit as many as was requested
+                if (
+                    last_frame is not None
+                    and frames
+                    and any(
+                        # if any of the colour channels are greater than 20 points different then lerp between them.
+                        abs(channel_b - channel_a) > 20
+                        for led_a, led_b in zip(last_frame, frames[0])
+                        for channel_a, channel_b in zip(led_a, led_b)
+                    )
+                ):
+                    # if an animation has played and the last and first frames are different enough
+                    # then interpolate from the last state to the first state
+                    # Some animations may be designed to loop so adding a fade will look weird
+                    draw_lerp_frames(pixels, last_frame, frames[0], transition_frames)
+
+                print(f"Loop {loop + 1} of {loops_per_sequence}")
+
+                # push all the frames to the tree
+                draw_frames(pixels, frames, frame_times)
+
+                # Store the last frame if it exists
+                if frames:
+                    last_frame = frames[-1]
+
+
+def main():
+    # parser to parse the command line inputs
+    parser = argparse.ArgumentParser(description="Run all spreadsheet in a directory.")
+    parser.add_argument(
+        "csv_directory",
+        metavar="csv-directory",
+        type=str,
+        help="The absolute or relative path to a directory containing csv files.",
+    )
+    parser.add_argument(
+        "loops_per_sequence",
+        type=int,
+        nargs="?",
+        default=5,
+        help="The number of times each sequence loops. Default is 5.",
+    )
+    parser.add_argument(
+        "transition_frames",
+        type=int,
+        nargs="?",
+        default=15,
+        help="The number of frames (at 30fps) over which to transition between sequences. "
+        "Set to 0 to disable interpolation.",
+    )
+    args, _ = parser.parse_known_args()
+    run_folder(args.csv_directory, args.loops_per_sequence, args.transition_frames)
+
+
+if __name__ == "__main__":
+    main()

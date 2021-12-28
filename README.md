@@ -28,6 +28,9 @@ A version of the final outcome from our test tree is provided in file `coords_ad
 
 Questions, suggestions and PRs can be directed to [@range-et](https://github.com/range-et)! 
 
+## Animation file format
+The specification for the animation CSV file format [can be found here](02_sequencing/README.md)
+
 ## Sequencing
 Once 3D coordinates are available, the following C# Scripts can be used as inspiration to generate sequences:
 

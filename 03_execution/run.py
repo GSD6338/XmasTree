@@ -1,73 +1,44 @@
 # Based on code from https://github.com/standupmaths/xmastree2020
+# Modified heavily by gentlegiantJGC
+
+import argparse
 
 import board
 import neopixel
-import time 
-from csv import reader
-import sys
 
-# helper function for chunking 
-def chunks(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i+n]
+from run_utils import parse_animation_csv, draw_frames
 
-# sleep_time = 0.033 # approx 30fps 
-sleep_time = 0.017  # approx 60fps
-
-NUMBEROFLEDS = 500
-pixels = neopixel.NeoPixel(board.D18, NUMBEROFLEDS, auto_write=False, pixel_order=neopixel.RGB)
-
-csvFile = sys.argv[1]
+# change if your setup has a different number of LEDs
+NUMBER_OF_LEDS = 500
 
 
-# read the file
-# iterate through the entire thing and make all the points the same colour 
-lightArray = []
+def load_and_run_csv(csv_path):
+    frames, frame_times = parse_animation_csv(csv_path, NUMBER_OF_LEDS, "RGB")
+    print("Finished Parsing")
+
+    pixels = neopixel.NeoPixel(
+        board.D18, NUMBER_OF_LEDS, auto_write=False, pixel_order=neopixel.RGB
+    )
+
+    # run the code on the tree
+    while True:
+        draw_frames(pixels, frames, frame_times)
 
 
-with open(csvFile, 'r') as read_obj:
-    # pass the file object to reader() to get the reader object
-    csv_reader = reader(read_obj)
+def main():
+    # parser to parse the command line inputs
+    parser = argparse.ArgumentParser(description="Run a single spreadsheet on loop.")
+    parser.add_argument(
+        "csv_path",
+        metavar="csv-path",
+        type=str,
+        help="The absolute or relative path to the csv file.",
+    )
 
-    # Iterate over each row in the csv using reader object
-    lineNumber = 0
-    for row in csv_reader:
-        # row variable is a list that represents a row in csv
-        # break up the list of rgb values 
-        # remove the first item
-        if lineNumber > 0:
-            parsed_row = []
-            row.pop(0)
-            chunked_list = list(chunks(row, 3))
-            for element_num in range(len(chunked_list)):
-                # this is a single light 
-                r = float(chunked_list[element_num][0])
-                g = float(chunked_list[element_num][1])
-                b = float(chunked_list[element_num][2])
-                light_val = (r, g, b)
-                # turn that led on
-                parsed_row.append(light_val)
-            
-            # append that line to lightArray 
-            lightArray.append(parsed_row)
-        # time.sleep(0.03)
-
-        lineNumber += 1
-
-print("Finished Parsing")
+    args, _ = parser.parse_known_args()
+    csv_path = args.csv_path
+    load_and_run_csv(csv_path)
 
 
-
-# run the code on the tree
-while True:
-    f = 0
-    for frame in lightArray:
-        print("running frame " + str(f))
-        LED = 0
-        while LED < NUMBEROFLEDS:
-            pixels[LED] = frame[LED]
-            LED += 1
-        pixels.show()
-    
-        f += 1
-#        time.sleep(sleep_time)
+if __name__ == "__main__":
+    main()
