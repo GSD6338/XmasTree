@@ -15,7 +15,7 @@ def chunks(lst, n):
 sleep_time = 0.017  # approx 60fps
 
 NUMBEROFLEDS = 500
-pixels = neopixel.NeoPixel(board.D18, NUMBEROFLEDS, auto_write=False)
+pixels = neopixel.NeoPixel(board.D18, NUMBEROFLEDS, auto_write=False, pixel_order=neopixel.RGB)
 
 csvFile = sys.argv[1]
 
@@ -44,7 +44,7 @@ with open(csvFile, 'r') as read_obj:
                 r = float(chunked_list[element_num][0])
                 g = float(chunked_list[element_num][1])
                 b = float(chunked_list[element_num][2])
-                light_val = (g, r, b)
+                light_val = (r, g, b)
                 # turn that led on
                 parsed_row.append(light_val)
             
