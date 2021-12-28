@@ -44,6 +44,9 @@ A few scripts, based on Matt's original code, are provided to load the CSV seque
 4. If you stop a sequence and want to turn off the tree, run `$ sudo python3 flush.py`
 5. If you need to fine calibrate the tree, you can turn on specific lights by ID running `$ sudo python3 turnon.py 0 99 199 299 399 499`. 
 
+## Contributions
+ 
+This repo is just a snapshot of the work we did in the Fall 2021 edition of the GSD-6338 course. Unfortunately, we do not have the resources to maintain, manage or extend it beyond what is available. If you want to ask questions, discuss standards, contribute new code, features and add new sexy goodness, please refer to [Matt's repo](https://github.com/standupmaths/xmastree2021) or start your own fork. Crediting is always welcome, thank you!
 
 # Credits
 
