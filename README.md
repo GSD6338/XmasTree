@@ -52,6 +52,9 @@ To run a sequence with OpenGL simulator execute this command: `$ sudo python3 vi
 ### Known Issues
 There are some issues with running the visualization script on windows (problems with GLUT)
 
+## Contributions
+ 
+This repo is just a snapshot of the work we did in the Fall 2021 edition of the GSD-6338 course. Unfortunately, we do not have the resources to maintain, manage or extend it beyond what is available. If you want to ask questions, discuss standards, contribute new code, features and add new sexy goodness, please refer to [Matt's repo](https://github.com/standupmaths/xmastree2021) or start your own fork. Crediting is always welcome, thank you!
 
 # Credits
 
