@@ -13,7 +13,7 @@ NUMBER_OF_LEDS = 500
 
 
 def parse_animation_csv(
-    csv_path,
+    csv_path, channel_order="RGB"
 ) -> Tuple[List[List[Tuple[float, float, float]]], List[float]]:
     """
     Parse a CSV animation file into python objects.
@@ -42,7 +42,10 @@ def parse_animation_csv(
     # we should not assume that the columns are in a known order. Isn't that the point of column names?
     # If a column does not exist it is set to None which is handled at the bottom and populates the column with 0.0
     led_columns: List[Tuple[Optional[int], Optional[int], Optional[int]]] = [
-        tuple(header_indexes.pop(f"{channel}_{led_index}", None) for channel in "GRB")
+        tuple(
+            header_indexes.pop(f"{channel}_{led_index}", None)
+            for channel in channel_order
+        )
         for led_index in range(NUMBER_OF_LEDS)
     ]
 
@@ -84,10 +87,12 @@ def parse_animation_csv(
 
 
 def load_and_run_csv(csv_path):
-    frames, frame_times = parse_animation_csv(csv_path)
+    frames, frame_times = parse_animation_csv(csv_path, "RGB")
     print("Finished Parsing")
 
-    pixels = neopixel.NeoPixel(board.D18, NUMBER_OF_LEDS, auto_write=False)
+    pixels = neopixel.NeoPixel(
+        board.D18, NUMBER_OF_LEDS, auto_write=False, pixel_order=neopixel.RGB
+    )
 
     # run the code on the tree
     while True:
